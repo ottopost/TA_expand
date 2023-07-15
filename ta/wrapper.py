@@ -1,22 +1,109 @@
 import pandas as pd
-from ta.momentum import (AwesomeOscillatorIndicator,
-                         KAMAIndicator, PercentagePriceOscillator, 
-                         PercentageVolumeOscillator, ROCIndicator, RSIIndicator,
-                         StochasticOscillator, StochRSIIndicator, 
-                         TSIIndicator, UltimateOscillator, WilliamsRIndicator)
-from ta.others import (CumulativeReturnIndicator,  
-                       DailyLogReturnIndicator, DailyReturnIndicator)
-from ta.trend import (ADXIndicator, AroonIndicator, CCIIndicator, DPOIndicator,
-                      EMAIndicator, IchimokuIndicator, KSTIndicator, MassIndex,  
-                      PSARIndicator, SMAIndicator, STCIndicator, TRIXIndicator,
-                      VortexIndicator)
-from ta.volatility import (AverageTrueRange, BollingerBands, 
-                           DonchianChannel, KeltnerChannel, UlcerIndex)
-from ta.volume import (AccDistIndexIndicator, ChaikinMoneyFlowIndicator,
-                       EaseOfMovementIndicator, ForceIndexIndicator, 
-                       MFIIndicator, NegativeVolumeIndexIndicator,
-                       OnBalanceVolumeIndicator, VolumePriceTrendIndicator,
-                       VolumeWeightedAveragePrice)
+from ta.momentum import (
+    AwesomeOscillatorIndicator,
+    KAMAIndicator,
+    PercentagePriceOscillator,
+    PercentageVolumeOscillator,
+    ROCIndicator,
+    RSIIndicator,
+    StochasticOscillator,
+    StochRSIIndicator,
+    TSIIndicator,
+    UltimateOscillator,
+    WilliamsRIndicator,
+)
+from ta.others import (
+    CumulativeReturnIndicator,
+    DailyLogReturnIndicator,
+    DailyReturnIndicator,
+)
+from ta.trend import (
+    MACD,
+    ADXIndicator,
+    AroonIndicator,
+    CCIIndicator,
+    DPOIndicator,
+    EMAIndicator,
+    IchimokuIndicator,
+    KSTIndicator,
+    MassIndex,
+    PSARIndicator,
+    SMAIndicator,
+    STCIndicator,
+    TRIXIndicator,
+    VortexIndicator,
+)
+from ta.volatility import (
+    AverageTrueRange,
+    BollingerBands,
+    DonchianChannel,
+    KeltnerChannel,
+    UlcerIndex,
+)
+from ta.volume import (
+    AccDistIndexIndicator,
+    ChaikinMoneyFlowIndicator,
+    EaseOfMovementIndicator,
+    ForceIndexIndicator,
+    MFIIndicator,
+    NegativeVolumeIndexIndicator,
+    OnBalanceVolumeIndicator,
+    VolumePriceTrendIndicator,
+    VolumeWeightedAveragePrice,
+)
+
+
+INDIC_PARAMS = {
+    'trend_sma_slow': {'window': 26},
+    'trend_sma_fast': {'window': 12},
+    'trend_ema_slow': {'window': 26},
+    'trend_ema_fast': {'window': 12},
+    
+    'trend_macd': {'window_slow': 26, 'window_fast': 12, 'window_sign': 9},
+    'trend_vortex': {'window': 14},
+    
+    'trend_kst': {'roc1': 10,'roc2': 15,'roc3': 20,'roc4': 30,'window1': 10,'window2': 10,'window3': 10,'window4': 15,'nsig': 9},
+    'trend_dpo': {'window': 20},
+    'trend_ichimoku': {'window1': 9,'window2': 26,'window3': 52},
+    'trend_psar': {'step': 0.02, 'max_step': 0.2},
+    
+    'trend_adx': {'window': 14},  
+    'trend_aroon': {'window': 25},
+    'trend_cci': {'window': 20, 'constant': 0.015},
+    'trend_visual_ichimoku': {'window1': 9,'window2': 26,'window3': 52},
+    
+    'momentum_rsi': {'window': 14},
+    'momentum_stoch_rsi': {'window': 14, 'smooth1': 3, 'smooth2': 3},
+    'momentum_tsi': {'window_slow': 25, 'window_fast': 13},
+    'momentum_uo': {'window1': 7, 'window2': 14, 'window3': 28},
+    'momentum_stoch': {'window': 14, 'smooth_window': 3},
+    'momentum_wr': {'lbp': 14}, 
+    'momentum_ao': {'window1': 5, 'window2': 34},
+    'momentum_roc': {'window': 12},
+    'momentum_ppo': {'window_slow': 26, 'window_fast': 12, 'window_sign': 9},
+    'momentum_pvo': {'window_slow': 26, 'window_fast': 12, 'window_sign': 9},
+    'momentum_kama': {'window': 10, 'pow1': 2, 'pow2': 30},
+    
+    'volatility_atr': {'window': 10},
+    'volatility_bb': {'window': 20, 'window_dev': 2},
+    'volatility_kc': {'window': 10}, 
+    'volatility_dc': {'window': 20, 'offset': 0},
+    'volatility_ui': {'window': 14},
+    
+    'volume_adi': {},
+    'volume_obv': {},
+    'volume_cmf': {},
+    'volume_fi': {'window': 13},
+    'volume_em': {'window': 14}, 
+    'volume_vpt': {},
+    'volume_vwap': {'window': 14},
+    'volume_mfi': {'window': 14},
+    'volume_nvi': {},
+    
+    'others_dr': {},
+    'others_dlr': {},
+    'others_cr': {},
+}
 
 
 def add_volume_ta(
@@ -406,77 +493,77 @@ def add_momentum_ta(df, high, low, close, volume, fillna, colprefix, vectorized,
             **params["momentum_tsi"]
         ).tsi()
 
-	if "momentum_uo" in params: 
-		df[f"{colprefix}momentum_uo"] = UltimateOscillator(
-		high=df[high],
-		low=df[low],
-		close=df[close],
-		fillna=fillna,
-		**params["momentum_uo"]
-		).ultimate_oscillator()
+    if "momentum_uo" in params: 
+        df[f"{colprefix}momentum_uo"] = UltimateOscillator(
+        high=df[high],
+        low=df[low],
+        close=df[close],
+        fillna=fillna,
+        **params["momentum_uo"]
+        ).ultimate_oscillator()
 
 	# Stochastics 
-	if "momentum_stoch" in params:
-		indicator_so = StochasticOscillator(
-		high=df[high],
-		low=df[low],
-		close=df[close],
-		fillna=fillna,
-		**params["momentum_stoch"]
-		)
-		df[f"{colprefix}momentum_stoch"] = indicator_so.stoch()
-		df[f"{colprefix}momentum_stoch_signal"] = indicator_so.stoch_signal()
+    if "momentum_stoch" in params:
+        indicator_so = StochasticOscillator(
+        high=df[high],
+        low=df[low],
+        close=df[close],
+        fillna=fillna,
+        **params["momentum_stoch"]
+        )
+        df[f"{colprefix}momentum_stoch"] = indicator_so.stoch()
+        df[f"{colprefix}momentum_stoch_signal"] = indicator_so.stoch_signal()
 
 	# Williams %R
-	if "momentum_wr" in params:
-		df[f"{colprefix}momentum_wr"] = WilliamsRIndicator(
-		high=df[high],
-		low=df[low], 
-		close=df[close],
-		fillna=fillna,
-		**params["momentum_wr"]
-		).williams_r()
+    if "momentum_wr" in params:
+        df[f"{colprefix}momentum_wr"] = WilliamsRIndicator(
+        high=df[high],
+        low=df[low], 
+        close=df[close],
+        fillna=fillna,
+        **params["momentum_wr"]
+        ).williams_r()
 
 	# Awesome Oscillator
-	if "momentum_ao" in params:
-		df[f"{colprefix}momentum_ao"] = AwesomeOscillatorIndicator(
-		high=df[high],
-		low=df[low],
-		fillna=fillna,
-		**params["momentum_ao"] 
-		).awesome_oscillator()
+    if "momentum_ao" in params:
+        df[f"{colprefix}momentum_ao"] = AwesomeOscillatorIndicator(
+        high=df[high],
+        low=df[low],
+        fillna=fillna,
+        **params["momentum_ao"] 
+        ).awesome_oscillator()
 
 	# Momentum
-	if "momentum_roc" in params:
-		df[f"{colprefix}momentum_roc"] = ROCIndicator(
-		close=df[close],
-		fillna=fillna,
-		**params["momentum_roc"]
-		).roc()
+    if "momentum_roc" in params:
+        df[f"{colprefix}momentum_roc"] = ROCIndicator(
+        close=df[close],
+        fillna=fillna,
+        **params["momentum_roc"]
+        ).roc()
 
 	# PPO
-	if "momentum_ppo" in params:
-		indicator_ppo = PercentagePriceOscillator(
-		close=df[close],
-		fillna=fillna,
-		**params["momentum_ppo"]
-		)
-		df[f"{colprefix}momentum_ppo"] = indicator_ppo.ppo()
-		df[f"{colprefix}momentum_ppo_signal"] = indicator_ppo.ppo_signal()
-		df[f"{colprefix}momentum_ppo_hist"] = indicator_ppo.ppo_hist()
-		
-	# PVO
-	if "momentum_pvo" in params:
-		indicator_pvo = PercentageVolumeOscillator(
-		volume=df[volume],
-		fillna=fillna,
-		**params["momentum_pvo"]
-		)
-		df[f"{colprefix}momentum_pvo"] = indicator_pvo.pvo()
-		df[f"{colprefix}momentum_pvo_signal"] = indicator_pvo.pvo_signal()
-		df[f"{colprefix}momentum_pvo_hist"] = indicator_pvo.pvo_hist()
+    if "momentum_ppo" in params:
+        indicator_ppo = PercentagePriceOscillator(
+        close=df[close],
+        fillna=fillna,
+        **params["momentum_ppo"]
+        )
+        df[f"{colprefix}momentum_ppo"] = indicator_ppo.ppo()
+        df[f"{colprefix}momentum_ppo_signal"] = indicator_ppo.ppo_signal()
+        df[f"{colprefix}momentum_ppo_hist"] = indicator_ppo.ppo_hist()
 
-   # EMV
+    # PVO
+    if "momentum_pvo" in params:
+        indicator_pvo = PercentageVolumeOscillator(
+        volume=df[volume],
+        fillna=fillna,
+        **params["momentum_pvo"]
+        )
+        df[f"{colprefix}momentum_pvo"] = indicator_pvo.pvo()
+        df[f"{colprefix}momentum_pvo_signal"] = indicator_pvo.pvo_signal()
+        df[f"{colprefix}momentum_pvo_hist"] = indicator_pvo.pvo_hist()
+
+    # EMV
     if "volume_emv" in params:
         df[f"{colprefix}volume_emv"] = EMVIndicator(high, 
         low, 
@@ -484,30 +571,24 @@ def add_momentum_ta(df, high, low, close, volume, fillna, colprefix, vectorized,
         volume, 
         fillna=fillna, 
         **params["volume_emv"]).emv()    
-    
-    # VPT
-    if "volume_vpt" in params:
-        df[f"{colprefix}volume_vpt"] = VolumePriceTrendIndicator(close, 
-        volume, 
-        fillna=fillna, 
-        **params["volume_vpt"]).volume_price_trend() 
 
-	if not vectorized:
-		# KAMA
-		if "momentum_kama" in params:
-		df[f"{colprefix}momentum_kama"] = KAMAIndicator(
-			close=df[close],
-			fillna=fillna,
-			**params["momentum_kama"]
-		).kama()
-		
-	return df
+
+    if not vectorized:
+        # KAMA
+        if "momentum_kama" in params:
+            df[f"{colprefix}momentum_kama"] = KAMAIndicator(
+                close=df[close],
+                fillna=fillna,
+                **params["momentum_kama"]
+            ).kama()
+
+    return df
 	
 def add_others_ta(df, close, fillna, colprefix, params):
 
     if params is None:
         params = {}
-    
+
     # Daily Return
     if "others_dr" in params:
         df[f"{colprefix}others_dr"] = DailyReturnIndicator(
@@ -531,14 +612,14 @@ def add_others_ta(df, close, fillna, colprefix, params):
             fillna=fillna,
             **params["others_cr"] 
         ).cumulative_return()
-    
+
     return df
 
 
-def add_all_ta_features(df, open, high, low, close, volume, fillna, colprefix, vectorized, params=None):
+def add_all_ta_features(df, open, high, low, close, volume, fillna, colprefix='', vectorized=False, params=None):
     
     if params is None:
-        params = {}
+        params = INDIC_PARAMS
         
     df = add_volume_ta(df, high, low, close, volume, fillna, colprefix, vectorized, params)
     df = add_volatility_ta(df, high, low, close, fillna, colprefix, vectorized, params)
