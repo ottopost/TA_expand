@@ -71,6 +71,9 @@ INDIC_PARAMS = {
     'trend_aroon': {'window': 25},
     'trend_cci': {'window': 20, 'constant': 0.015},
     'trend_visual_ichimoku': {'window1': 9,'window2': 26,'window3': 52},
+    'trend_trix': {'window': 15},  
+    'trend_mass_index': {'window_fast': 9,'window_slow': 25},
+    'trend_stc':{'window_fast':23, 'window_slow':50,'cycle':10,'smooth1':3,'smooth2':3},
     
     'momentum_rsi': {'window': 14},
     'momentum_stoch_rsi': {'window': 14, 'smooth1': 3, 'smooth2': 3},
