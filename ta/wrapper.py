@@ -166,7 +166,7 @@ def add_volume_ta(
             **params["volume_em"]
         )
         df[f"{colprefix}volume_em"] = indicator_eom.ease_of_movement()
-        df[f"{colprefix}volume_sma_em"] = indicator_eom.sma_ease_of_movement()
+        df[f"{colprefix}volume_em_sma"] = indicator_eom.sma_ease_of_movement()
 
     # Volume Price Trend
     if "volume_vpt" in params:
